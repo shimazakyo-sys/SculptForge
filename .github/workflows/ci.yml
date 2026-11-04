@@ -151,7 +151,7 @@ jobs:
           Copy-Item "$dir\ccache.exe" "$cl\cl.exe"
           "SF_CCACHE_CL=$($cl -replace '\\', '/')" >> $env:GITHUB_ENV
       - name: Compiler cache (restore)
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: .ccache
           key: ccache-ci-${{ matrix.key }}.${{ github.sha }}
@@ -168,7 +168,7 @@ jobs:
         run: echo "id=${ImageOS:-$RUNNER_OS}-${ImageVersion:-unknown}" >> "$GITHUB_OUTPUT"
       - name: Configure cache (restore)
         id: cmake-cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: build
           key: cmake-ci-${{ matrix.key }}~${{ steps.image.outputs.id }}-py${{ steps.py.outputs.python-version }}-${{ hashFiles('CMakeLists.txt', 'cmake/**', 'packaging/linux/install-build-deps.sh') }}
@@ -186,7 +186,7 @@ jobs:
           -DSCULPTFORGE_BUILD_PYTHON=ON -DPython_EXECUTABLE="${{ env.pythonLocation }}/python.exe"
       - name: Configure cache (save; a miss, not from pull requests; one shard saves)
         if: steps.cmake-cache.outputs.cache-hit != 'true' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && matrix.shard == 1
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: build
           key: ${{ steps.cmake-cache.outputs.cache-primary-key }}
@@ -197,7 +197,7 @@ jobs:
           ccache -s -v
       - name: Compiler cache (save; not from pull requests; one shard saves)
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && matrix.shard == 1
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: .ccache
           key: ccache-ci-${{ matrix.key }}.${{ github.sha }}
@@ -264,7 +264,7 @@ jobs:
           sudo ./packaging/linux/install-build-deps.sh
           sudo apt-get install -y --no-install-recommends ccache
       - name: Compiler cache (restore)
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: .ccache
           key: ccache-ci-blender-${{ matrix.bpy }}.${{ github.sha }}
@@ -279,7 +279,7 @@ jobs:
           ccache -s -v
       - name: Compiler cache (save; not from pull requests)
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: .ccache
           key: ccache-ci-blender-${{ matrix.bpy }}.${{ github.sha }}
@@ -320,7 +320,7 @@ jobs:
           echo "CCACHE_MAXSIZE=500M" >> "$GITHUB_ENV"
           echo "CCACHE_DEPEND=true" >> "$GITHUB_ENV"
       - name: Compiler cache (restore)
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@v6
         with:
           path: .ccache
           key: ccache-ci-${{ matrix.cy }}.${{ github.sha }}
@@ -343,7 +343,7 @@ jobs:
           ccache -s -v
       - name: Compiler cache (save; not from pull requests)
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        uses: actions/cache/save@v5
+        uses: actions/cache/save@v6
         with:
           path: .ccache
           key: ccache-ci-${{ matrix.cy }}.${{ github.sha }}
